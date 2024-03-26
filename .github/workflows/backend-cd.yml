@@ -86,11 +86,11 @@ jobs:
         working-directory: starter/backend
         #add the AWS_ACCOUNT_ID variable
         run: |
-          docker build --build-arg=REACT_APP_MOVIE_API_URL=http://localhost:5000 --tag ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.us-east-1.amazonaws.com/backend:latest .
+          docker build --build-arg=REACT_APP_MOVIE_API_URL=http://localhost:5000 --tag ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.us-east-1.amazonaws.com/backend:${GITHUB_SHA::7} .
       - name: Publish the docker image to ECR
         working-directory: starter/backend
         run: |
-          docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.us-east-1.amazonaws.com/backend:latest
+          docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.us-east-1.amazonaws.com/backend:${GITHUB_SHA::7}
       - name: Kubeconfig configuration
         working-directory: starter/backend
         run: |
@@ -98,5 +98,5 @@ jobs:
       - name: Deploy Docker Image to Amazon EKS
         working-directory: starter/backend/k8s
         run: |
-          kustomize edit set image backend=${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.us-east-1.amazonaws.com/backend:latest
+          kustomize edit set image backend=${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.us-east-1.amazonaws.com/backend:${GITHUB_SHA::7}
           kustomize build | kubectl apply -f -
